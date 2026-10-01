@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ WebAssembly App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="card">
+        <h1>Brighton Maranga Project</h1>
+        <p>Run lightning-fast C++ calculations in the browser!</p>
+        <input type="number" id="numInput" placeholder="Enter a number">
+        <button onclick="runCalculation()">Calculate</button>
+        <h2 id="resultOutput">Result: </h2>
+    </div>
+
+    <!-- Emscripten generated glue script -->
+    <script src="logic.js"></script>
+
+    <script>
+        function runCalculation() {
+            // 1. Get the value from the input field
+            let inputVal = document.getElementById("numInput").value;
+            
+            // 2. Call the compiled C++ function via WebAssembly
+            // Syntaxes: Module.ccall('c_function_name', 'return_type', ['argument_types'], [arguments])
+            let output = Module.ccall(
+                'calculate',      // The name of your C++ function
+                'number',         // Return type (e.g., number, string)
+                ['number'],       // Argument types
+                [Number(inputVal)] // The actual value passed
+            );
+            
+            // 3. Display the result in the H2 tag
+            document.getElementById("resultOutput").innerText = "Result: " + output;
+        }
+    </script>
+</body>
+</html>
