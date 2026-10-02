@@ -3,37 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C++ WebAssembly App</title>
+    <title>Brighton Maranga Premium Platform</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="card">
+    <div class="container">
         <h1>Brighton Maranga Project</h1>
-        <p>Run lightning-fast C++ calculations in the browser!</p>
-        <input type="number" id="numInput" placeholder="Enter a number">
-        <button onclick="runCalculation()">Calculate</button>
-        <h2 id="resultOutput">Result: </h2>
+        <p>High-Speed C++ WebAssembly Engine</p>
+
+        <!-- C++ Engine Inputs -->
+        <div class="calculator-box">
+            <input type="number" id="amount" placeholder="Enter Investment Amount (Ksh)">
+            <input type="number" id="rate" placeholder="Interest Rate (%)">
+            <input type="number" id="time" placeholder="Duration (Years)">
+            <button onclick="runCalculation()">Run C++ Calculation</button>
+            
+            <h3 id="output">Result: Ksh 0.00</h3>
+        </div>
+
+        <!-- Lipa Na M-Pesa Section -->
+        <div class="premium-box" style="margin-top: 30px; border-top: 1px solid #444; padding-top: 20px;">
+            <h2>Unlock Premium Analytics Report</h2>
+            <p>Get a comprehensive analytical layout processed locally via our C++ library framework.</p>
+            <input type="text" id="phone" placeholder="Enter M-Pesa Phone (e.g., 254712345678)">
+            <button class="mpesa-btn" onclick="triggerMpesaPayment()" style="background-color: #4bac4d; color: white; padding: 14px; cursor: pointer; border: none; border-radius: 8px; font-weight: 600; width: 100%;">PAY KSH 10 VIA M-PESA</button>
+        </div>
     </div>
 
-    <!-- Emscripten generated glue script -->
+    <!-- WebAssembly framework scripts -->
     <script src="logic.js"></script>
 
     <script>
+        // 1. Run local compiled WebAssembly calculations
         function runCalculation() {
-            // 1. Get the value from the input field
-            let inputVal = document.getElementById("numInput").value;
-            
-            // 2. Call the compiled C++ function via WebAssembly
-            // Syntaxes: Module.ccall('c_function_name', 'return_type', ['argument_types'], [arguments])
-            let output = Module.ccall(
-                'calculate',      // The name of your C++ function
-                'number',         // Return type (e.g., number, string)
-                ['number'],       // Argument types
-                [Number(inputVal)] // The actual value passed
+            const principal = parseFloat(document.getElementById('amount').value) || 0;
+            const rate = parseFloat(document.getElementById('rate').value) || 0;
+            const time = parseInt(document.getElementById('time').value) || 0;
+
+            // Make sure 'calculate_premium_financial_model' matches the exact function inside your logic.cpp
+            const result = Module.ccall(
+                'calculate_premium_financial_model', 
+                'number', 
+                ['number', 'number', 'number'], 
+                [principal, rate, time]
             );
             
-            // 3. Display the result in the H2 tag
-            document.getElementById("resultOutput").innerText = "Result: " + output;
+            document.getElementById('output').innerText = `Result: Ksh ${result.toFixed(2)}`;
+        }
+
+        // 2. Trigger Safaricom checkout prompt via backend server
+        async function triggerMpesaPayment() {
+            const phoneNumber = document.getElementById('phone').value.trim();
+            const amount = 10; 
+
+            if (!phoneNumber) {
+                alert("Please enter your M-Pesa phone number first!");
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/stkpush', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: phoneNumber, amount: amount })
+                });
+
+                const data = await response.json();
+                if (data.ResponseCode === "0") {
+                    alert("Success! Check your mobile phone screen for the Safaricom M-Pesa PIN prompt.");
+                } else {
+                    alert("Payment initiation failed. Please check your server terminal.");
+                }
+            } catch (err) {
+                alert("Could not connect to server.js! Please ensure the backend server environment is running.");
+            }
         }
     </script>
 </body>
